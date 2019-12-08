@@ -46,6 +46,12 @@ m365proidentity = bytearray(
     ]
 )
 
+max555identity = bytearray(
+    [
+        0x4E, 0x42, 0x24, 0x00, 0x00, 0x00, 0x00, 0xDB,  # Xiaomi M365 Pro Bluetooth ID 4E422201000000DC
+    ]
+)
+
 service_ids = {"retail": "6e400001-b5a3-f393-e0a9-e50e24dcca9e"}  # service UUID
 
 receive_ids = {
