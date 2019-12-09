@@ -37,12 +37,13 @@ class Connection:
         if self.transport == 'ninebot':
             from py9b.transport.ninebot import NinebotTransport
             transport = NinebotTransport(link)
+            
         elif self.transport == 'xiaomi':
             from py9b.transport.xiaomi import XiaomiTransport
             transport = XiaomiTransport(link)
 
             if transport.execute(ReadRegs(BT.ESC, 0x68, "<H"))[0] > 0x081 and self.link.startswith('ble'):
-                transport.keys = link.fetch_keys()
+                transport.keys = link.fetch_keys_pro()
                 transport.recover_keys()
                 print('Keys recovered')
 
