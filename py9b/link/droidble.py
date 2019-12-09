@@ -68,7 +68,10 @@ transmit_ids = {
     "retail": "6e400003-b5a3-f393-e0a9-e50e24dcca9e"# transmit characteristic UUID
 }
 
-_keys_char_uuid = "00000014-0000-1000-8000-00805f9b34fb"
+key_ids = {
+    '_pro_keys_char_uuid': "00000014-0000-1000-8000-00805f9b34fb",
+    '_max_keys_char_uuid': "0000fe95-0000-1000-8000-00805f9b34fb"
+}
 
 
 SCAN_TIMEOUT = 5
@@ -142,6 +145,10 @@ class BLE(BluetoothDispatcher):
                         self.scoot_found = True
                     if ad.data.startswith(m365proidentity):
                         self.scoot_found = True
+                    if ad.data.startswith(maxidentity):
+                        self.scoot_found = True
+                    if ad.data.startswith(max555identity):
+                        self.scoot_found = True
                     else:
                         break
                 elif ad.ad_type == Advertisement.ad_types.complete_local_name:
@@ -174,7 +181,9 @@ class BLE(BluetoothDispatcher):
             self.tx_characteristic = self.services.search(uuid)
             print("TX: " + uuid)
             self.enable_notifications(self.tx_characteristic, enable=True)
-        self.keys_characteristic = self.services.search(_keys_char_uuid)
+        for uuid in key_ids.values():
+            self.keys_characteristic = self.services.search(uuid)
+            print("K: " + uuid)
         if self.tx_characteristic and self.rx_characteristic:
             self.connected.set()
             self.state = "connected"
@@ -243,7 +252,7 @@ class BLE(BluetoothDispatcher):
     def scan(self):
         self.discover(SCAN_TIMEOUT)
 
-    def fetch_keys(self):
+    def fetch_keys_pro(self):
         self.read_characteristic(self.keys_characteristic)
         self.keys_recovered.wait(5)
         print('got keys!')

@@ -6,7 +6,8 @@ from threading import Thread
 
 _rx_char_uuid = "6e400002-b5a3-f393-e0a9-e50e24dcca9e"
 _tx_char_uuid = "6e400003-b5a3-f393-e0a9-e50e24dcca9e"
-_keys_char_uuid = "00000014-0000-1000-8000-00805f9b34fb"
+_pro_keys_char_uuid = "00000014-0000-1000-8000-00805f9b34fb"
+_max_keys_char_uuid = "0000fe95-0000-1000-8000-00805f9b34fb"
 
 _manuf_id = 0x424e
 _manuf_data_ninebot = [33, 0, 0, 0, 0, 222]
@@ -92,7 +93,7 @@ class BLELink(BaseLink):
             for dev in devices
             if dev.metadata.get('manufacturer_data', {}).get(_manuf_id, [])
                 in [_manuf_data_xiaomi, _manuf_data_xiaomi_pro, _manuf_data_ninebot,
-                 _manuf_data_ninebot_max555]
+                _manuf_data_ninebot_max, _manuf_data_ninebot_max555]
         ]
 
     def open(self, port):
@@ -134,7 +135,7 @@ class BLELink(BaseLink):
             raise LinkTimeoutException
         return data
 
-    def fetch_keys(self):
+    def fetch_keys_pro(self):
         return asyncio.run_coroutine_threadsafe(
-            self._client.read_gatt_char(_keys_char_uuid), self.loop
+            self._client.read_gatt_char(_pro_keys_char_uuid), self.loop
         ).result(5)
