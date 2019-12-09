@@ -46,6 +46,12 @@ m365proidentity = bytearray(
     ]
 )
 
+maxidentity = bytearray(
+    [
+        0x4E, 0x42, 0x24, 0x02, 0x00, 0x00, 0x00, 0xD9,  # Xiaomi M365 Pro Bluetooth ID 4E422201000000DC
+    ]
+)
+
 max555identity = bytearray(
     [
         0x4E, 0x42, 0x24, 0x00, 0x00, 0x00, 0x00, 0xDB,  # Xiaomi M365 Pro Bluetooth ID 4E422201000000DC
