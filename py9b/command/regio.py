@@ -4,6 +4,7 @@ from struct import pack, unpack, calcsize
 from .base import BaseCommand, InvalidResponse
 
 
+
 class ReadRegs(BaseCommand):
     def __init__(self, dev, reg, format):
         super(ReadRegs, self).__init__(
@@ -11,7 +12,7 @@ class ReadRegs(BaseCommand):
             cmd=0x01,
             arg=reg,
             data=pack("<B", calcsize(format)),
-            has_response=True,
+            has_response=False,
         )
         self.dev = dev
         self.reg = reg
@@ -24,6 +25,7 @@ class ReadRegs(BaseCommand):
                     self.dev, self.reg, response.arg, len(response.data)
                 )
             )
+        self.has_response = True
         return unpack(self.format, response.data)
 
 
@@ -34,7 +36,7 @@ class WriteProtectError(Exception):
 class WriteRegs(BaseCommand):
     def __init__(self, dev, reg, format, *args):
         super(WriteRegs, self).__init__(
-            dst=dev, cmd=0x02, arg=reg, data=pack(format, *args), has_response=True
+            dst=dev, cmd=0x02, arg=reg, data=pack(format, *args), has_response=False
         )
         self.dev = dev
         self.reg = reg
@@ -49,6 +51,7 @@ class WriteRegs(BaseCommand):
                 raise WriteProtectError(
                     "WriteRegs {0:X}:{1:X}".format(self.dev, self.reg)
                 )
+                
         elif response.cmd == 0x05:  # ninebot style
             if len(response.data) == 0:
                 # firmware < 0401
@@ -71,6 +74,7 @@ class WriteRegs(BaseCommand):
 
         else:
             raise InvalidResponse("WriteRegs {0:X}:{1:X}".format(self.dev, self.reg))
+        self.has_response = True
         return True
 
 

@@ -31,7 +31,7 @@ class UpdateError(Exception):
 class StartUpdate(BaseCommand):
     def __init__(self, dev, size):
         super(StartUpdate, self).__init__(
-            dst=dev, cmd=0x07, data=pack("<L", size), has_response=True
+            dst=dev, cmd=0x07, data=pack("<L", size), has_response=False
         )
         self.dev = dev
 
@@ -44,13 +44,14 @@ class StartUpdate(BaseCommand):
                     self.dev, UpdateErrorCodes.get(response.arg, str(response.arg))
                 )
             )
+        self.has_response = True
         return True
 
 
 class WriteUpdate(BaseCommand):
     def __init__(self, dev, page, data):
         super(WriteUpdate, self).__init__(
-            dst=dev, cmd=0x08, arg=page & 0xFF, data=data, has_response=True
+            dst=dev, cmd=0x08, arg=page & 0xFF, data=data, has_response=False
         )
         self.dev = dev
         self.page = page
@@ -68,13 +69,14 @@ class WriteUpdate(BaseCommand):
                     UpdateErrorCodes.get(response.arg, str(response.arg)),
                 )
             )
+        self.has_response = True
         return True
 
 
 class FinishUpdate(BaseCommand):
     def __init__(self, dev, checksum):
         super(FinishUpdate, self).__init__(
-            dst=dev, cmd=0x09, data=pack("<L", checksum), has_response=True
+            dst=dev, cmd=0x09, data=pack("<L", checksum), has_response=False
         )
         self.dev = dev
 
@@ -87,6 +89,7 @@ class FinishUpdate(BaseCommand):
                     self.dev, UpdateErrorCodes.get(response.arg, str(response.arg))
                 )
             )
+        self.has_response = True
         return True
 
 
@@ -96,6 +99,7 @@ class RebootUpdate(BaseCommand):
         self.dev = dev
 
     def handle_response(self, response):
+        self.has_response = True
         return True
 
 

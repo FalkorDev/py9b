@@ -27,7 +27,7 @@ class BaseTransport(object):
 
     def __init__(self, link):
         self.link = link
-        self.retries = 1
+        self.retries = 10
 
     def recv(self):
         raise NotImplementedError()
@@ -37,18 +37,17 @@ class BaseTransport(object):
 
     def execute(self, command, retries=None):
         self.send(command.request)
-        if not command.has_response:
-            return True
-            # TODO: retry ?
         exc = None
-        for n in range(retries or self.retries):
-            try:
-                rsp = self.recv()
-                return command.handle_response(rsp)
-            except Exception as e:
+        try:
+            rsp = self.recv()
+            return command.handle_response(rsp)
+        except Exception as e:
+            for n in range(retries or self.retries):
                 print("retry")
+                self.send(command.request)
+            if not self.command.has_response:
                 exc = e
-                pass
+            pass
         raise exc
 
     @staticmethod

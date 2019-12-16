@@ -9,7 +9,7 @@ class ReadMem(BaseCommand):
             cmd=0x80,
             arg=calcsize(format),
             data=pack("<H", addr),
-            has_response=True,
+            has_response=False,
         )
         self.dev = dev
         self.format = format
@@ -17,6 +17,7 @@ class ReadMem(BaseCommand):
     def handle_response(self, response):
         if len(response.data) != calcsize(self.format):
             raise InvalidResponse("ReadMem {0:X}".format(self.dev))
+        self.has_response = True
         return unpack(self.format, response.data)
 
 
