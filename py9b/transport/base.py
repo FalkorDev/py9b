@@ -1,5 +1,6 @@
 """Transport abstract class"""
 
+import time
 
 def checksum(data):
     s = 0
@@ -43,9 +44,13 @@ class BaseTransport(object):
             return command.handle_response(rsp)
         except Exception as e:
             for n in range(retries or self.retries):
-                print("retry")
-                self.send(command.request)
-            if not self.command.has_response:
+                rsp = self.recv()
+                return command.handle_response(rsp)
+                if not command.has_response:
+                    print("retry")
+                    self.send(command.request)
+                    time.sleep(0.5)
+            if not command.has_response:
                 exc = e
             pass
         raise exc
