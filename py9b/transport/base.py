@@ -44,12 +44,14 @@ class BaseTransport(object):
             return command.handle_response(rsp)
         except Exception as e:
             for n in range(retries or self.retries):
-                rsp = self.recv()
-                return command.handle_response(rsp)
                 if not command.has_response:
                     print("retry")
                     self.send(command.request)
-                    time.sleep(0.5)
+                    try:
+                        rsp = self.recv()
+                        return command.handle_response(rsp)
+                elif command.has_response:
+                    exc = None
             if not command.has_response:
                 exc = e
             pass
