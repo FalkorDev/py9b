@@ -52,8 +52,12 @@ class BaseTransport(object):
                         return command.handle_response(rsp)
                 elif command.has_response:
                     exc = None
+                    self.retries = 0
+
             if not command.has_response:
                 exc = e
+
+            self.retries = 10
             pass
         raise exc
 
