@@ -50,15 +50,12 @@ class BaseTransport(object):
                     try:
                         rsp = self.recv()
                         return command.handle_response(rsp)
+                    except:
+                        exc = e
                 elif command.has_response:
                     exc = None
                     self.retries = 0
-
-            if not command.has_response:
-                exc = e
-
-            self.retries = 10
-            pass
+        self.retries = 10
         raise exc
 
     @staticmethod
