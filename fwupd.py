@@ -1,4 +1,3 @@
-#!python2-32
 from __future__ import print_function
 from sys import argv, exit
 import os

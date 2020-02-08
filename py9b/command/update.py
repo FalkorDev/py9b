@@ -44,8 +44,8 @@ class StartUpdate(BaseCommand):
                     self.dev, UpdateErrorCodes.get(response.arg, str(response.arg))
                 )
             )
-        self.has_response = True
         return True
+        self.has_response=True
 
 
 class WriteUpdate(BaseCommand):
@@ -69,8 +69,8 @@ class WriteUpdate(BaseCommand):
                     UpdateErrorCodes.get(response.arg, str(response.arg)),
                 )
             )
-        self.has_response = True
         return True
+        self.has_response=True
 
 
 class FinishUpdate(BaseCommand):
@@ -89,8 +89,8 @@ class FinishUpdate(BaseCommand):
                     self.dev, UpdateErrorCodes.get(response.arg, str(response.arg))
                 )
             )
-        self.has_response = True
         return True
+        self.has_response=True
 
 
 class RebootUpdate(BaseCommand):
@@ -99,8 +99,8 @@ class RebootUpdate(BaseCommand):
         self.dev = dev
 
     def handle_response(self, response):
-        self.has_response = True
         return True
+        self.has_response=True
 
 
 __all__ = ["UpdateError", "StartUpdate", "WriteUpdate", "FinishUpdate", "RebootUpdate"]

@@ -3,6 +3,7 @@ from __future__ import absolute_import
 import socket
 from binascii import hexlify
 from .base import BaseLink, LinkTimeoutException, LinkOpenException
+from threading import Event
 
 HOST, PORT = "127.0.0.1", 6000
 
@@ -23,9 +24,10 @@ def recvall(sock, size):
 class TCPLink(BaseLink):
     def __init__(self, *args, **kwargs):
         super(TCPLink, self).__init__(*args, **kwargs)
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.settimeout(self.timeout)
-        self.connected = False
+        self.device = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.timeout = 2
+        self.device.settimeout(self.timeout)
+        self.connected = Event()
 
     def __enter__(self):
         return self
@@ -43,18 +45,19 @@ class TCPLink(BaseLink):
         port = int(p[2], 10)
         print(host, port)
         try:
-            self.sock.connect((host, port))
+            self.device.connect((host, port))
         except socket.timeout:
             raise LinkOpenException
-        self.connected = True
+        self.connected.set()
 
     def close(self):
         if self.connected:
-            self.sock.close()
-            self.connected = False
+            self.device.close()
+            if self.connected.is_set():
+                self.connected.clear()
 
     def read(self, size):
-        data = recvall(self.sock, size)
+        data = recvall(self.device, size)
         if data and self.dump:
             print("<", hexlify(data).upper())
         return data
@@ -66,7 +69,7 @@ class TCPLink(BaseLink):
         ofs = 0
         while size:
             chunk_sz = min(size, _write_chunk_size)
-            self.sock.sendall(data[ofs : ofs + chunk_sz])
+            self.device.sendall(data[ofs : ofs + chunk_sz])
             ofs += chunk_sz
             size -= chunk_sz
 

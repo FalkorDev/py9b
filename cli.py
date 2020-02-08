@@ -37,7 +37,7 @@ class Connection:
         if self.transport == 'ninebot':
             from py9b.transport.ninebot import NinebotTransport
             transport = NinebotTransport(link)
-            
+
         elif self.transport == 'xiaomi':
             from py9b.transport.xiaomi import XiaomiTransport
             transport = XiaomiTransport(link)
@@ -175,15 +175,20 @@ def info(ctx):
 
 @cli.command()
 @click.argument('new_sn')
+@click.option('device', default='esc', help='Which device to dump (one of esc, bms, extbms)')
 @click.pass_context
-def changesn(ctx, new_sn):
-    from py9b.command.mfg import WriteSN, CalcSNAuth
-
+def changesn(ctx, new_sn, device):
+    from py9b.command.mfg import WriteSNAuth, CalcSNAuth
+    dev = {
+        'esc': BT.ESC,
+        'bms': BT.BMS,
+        'extbms': BT.EXTBMS,
+    }[device]
     with ctx.obj as tran:
-        old_sn = tran.execute(ReadRegs(BT.ESC, 0x10, "14s"))[0].decode()
+        old_sn = tran.execute(ReadRegs(dev, 0x10, "14s"))[0].decode()
         print("Old S/N:", old_sn)
 
-        uid3 = tran.execute(ReadRegs(BT.ESC, 0xDE, "<L"))[0]
+        uid3 = tran.execute(ReadRegs(dev, 0xDE, "<L"))[0]
         print("UID3: %08X" % (uid3))
 
         auth = CalcSnAuth(old_sn, new_sn, uid3)
@@ -191,7 +196,7 @@ def changesn(ctx, new_sn):
         print("Auth: %08X" % (auth))
 
         try:
-            tran.execute(WriteSN(BT.ESC, new_sn.encode('utf-8'), auth))
+            tran.execute(WriteSNAuth(dev, new_sn.encode('utf-8'), auth))
             print("OK")
         except LinkTimeoutException:
             print("Timeout !")
@@ -200,7 +205,7 @@ def changesn(ctx, new_sn):
         tran.execute(WriteRegs(BT.ESC, 0x78, "<H", 0x01))
         time.sleep(3)
 
-        old_sn = tran.execute(ReadRegs(BT.ESC, 0x10, "14s"))[0]
+        old_sn = tran.execute(ReadRegs(dev, 0x10, "14s"))[0]
         print("Current S/N:", old_sn)
 
 def pp_distance(dist):

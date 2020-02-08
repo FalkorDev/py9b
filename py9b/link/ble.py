@@ -4,6 +4,7 @@ from __future__ import absolute_import
 import pygatt
 from .base import BaseLink, LinkTimeoutException, LinkOpenException
 from binascii import hexlify
+from threading import Event
 
 SCAN_TIMEOUT = 3
 
@@ -43,6 +44,9 @@ class BLELink(BaseLink):
         self._dev = None
         self._wr_handle = None
         self._rx_fifo = Fifo()
+        self.connected = Event()
+        self.iotimeout = 2
+        self.timeout = SCAN_TIMEOUT
 
     def __enter__(self):
         self._adapter = pygatt.GATTToolBackend()
@@ -76,6 +80,7 @@ class BLELink(BaseLink):
             )
             self._dev.subscribe(_tx_char_uuid, callback=self._make_rx_cb())
             self._wr_handle = self._dev.get_handle(_rx_char_uuid)
+            self.connected.set()
         except pygatt.exceptions.NotConnectedError:
             raise LinkOpenException
 
@@ -85,10 +90,11 @@ class BLELink(BaseLink):
             self._dev = None
             if self._adapter:
                 self._adapter.stop()
+        self.connected.clear()
 
     def read(self, size):
         try:
-            data = self._rx_fifo.read(size, timeout=self.timeout)
+            data = self._rx_fifo.read(size, timeout=self.iotimeout)
         except queue.Empty:
             raise LinkTimeoutException
         if self.dump:

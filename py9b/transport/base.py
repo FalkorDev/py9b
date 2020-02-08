@@ -15,7 +15,7 @@ class BaseTransport(object):
     BLE = 0x21
     BMS = 0x22
     EXTBMS = 0x23
-    HOST = 0x3E
+    HOST = 0x3D
 
     DeviceNames = {
         MOTOR: "MOTOR",
@@ -37,26 +37,25 @@ class BaseTransport(object):
         raise NotImplementedError()
 
     def execute(self, command, retries=None):
-        self.send(command.request)
         exc = None
+        self.send(command.request)
         try:
             rsp = self.recv()
             return command.handle_response(rsp)
         except Exception as e:
+            exc = e
             for n in range(retries or self.retries):
-                if not command.has_response:
-                    print("retry")
-                    self.send(command.request)
-                    try:
-                        rsp = self.recv()
-                        return command.handle_response(rsp)
-                    except:
-                        exc = e
-                elif command.has_response:
+                try:
+                    rsp = self.recv()
+                    return command.handle_response(rsp)
+                except Exception as e:
+                    exc = e
+                if command.has_response:
                     exc = None
                     self.retries = 0
+                if exc is not None:
+                    raise exc
         self.retries = 10
-        raise exc
 
     @staticmethod
     def GetDeviceName(dev):
