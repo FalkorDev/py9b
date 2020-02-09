@@ -54,6 +54,7 @@ class BLELink(BaseLink):
         self._rx_fifo = Fifo()
         self.device = None
         self._th = None
+        self.scanned = Event()
         self.connected = Event()
 
     def __enter__(self):
@@ -76,12 +77,16 @@ class BLELink(BaseLink):
         asyncio.run_coroutine_threadsafe(self.device.disconnect(), self.loop).result(
             10
         )
-        self.connected.clear()
+        if self.scanned.is_set():
+            self.scanned.clear()
+        if self.connected.is_set():
+            self.connected.clear()
 
     def scan(self, timeout=1):
         devices = asyncio.run_coroutine_threadsafe(
             discover(timeout=timeout, device=self.adapter), self.loop
         ).result(timeout*3)
+        self.scanned.set()
 
         # We need to keep scanning going for connect() to properly work
         asyncio.run_coroutine_threadsafe(

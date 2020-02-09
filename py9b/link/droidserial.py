@@ -17,6 +17,7 @@ class SerialLink(BaseLink):
         self.device = None
         self.usb_device_name_list = None
         self.timeout = 1
+        self.scanned = Event()
         self.connected = Event()
 
     def __enter__(self):
@@ -39,6 +40,7 @@ class SerialLink(BaseLink):
         }
         res = self.usb_device_name_list
         print(res)
+        self.scanned.set()
         return res
 
 
@@ -81,6 +83,8 @@ class SerialLink(BaseLink):
 
     def close(self):
         if self.device:
+            if self.scanned.is_set():
+                self.scanned.clear()
             if self.connected.is_set():
                 self.connected.clear()
             self.device.close()

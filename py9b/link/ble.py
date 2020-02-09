@@ -44,6 +44,7 @@ class BLELink(BaseLink):
         self._dev = None
         self._wr_handle = None
         self._rx_fifo = Fifo()
+        self.scanned = Event()
         self.connected = Event()
         self.iotimeout = 2
         self.timeout = SCAN_TIMEOUT
@@ -71,6 +72,7 @@ class BLELink(BaseLink):
                 (u"MISc", u"NBSc", u"JP2", u"Seg")
             ):
                 res.append((dev["name"], dev["address"]))
+        self.scanned.set()
         return res
 
     def open(self, port):
@@ -90,7 +92,10 @@ class BLELink(BaseLink):
             self._dev = None
             if self._adapter:
                 self._adapter.stop()
-        self.connected.clear()
+            if self.scanned.is_set():
+                self.scanned.clear()
+            if self.connected.is_set():
+                self.connected.clear()
 
     def read(self, size):
         try:

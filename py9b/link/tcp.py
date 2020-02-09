@@ -27,6 +27,7 @@ class TCPLink(BaseLink):
         self.device = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.timeout = 2
         self.device.settimeout(self.timeout)
+        self.scanned = Event()
         self.connected = Event()
 
     def __enter__(self):
@@ -36,7 +37,8 @@ class TCPLink(BaseLink):
         self.close()
 
     def scan(self):
-        res = [("Android UART Bridge", HOST + ":" + str(PORT))]
+        res = [("UART Bridge", HOST + ":" + str(PORT))]
+        self.scanned.set()
         return res
 
     def open(self, port):
@@ -53,6 +55,8 @@ class TCPLink(BaseLink):
     def close(self):
         if self.connected:
             self.device.close()
+            if self.scanned.is_set():
+                self.scanned.clear()
             if self.connected.is_set():
                 self.connected.clear()
 

@@ -13,6 +13,7 @@ class SerialLink(BaseLink):
         super(SerialLink, self).__init__(*args, **kwargs)
         self.device = None
         self.timeout = 1
+        self.scanned = Event()
         self.connected = Event()
 
     def __enter__(self):
@@ -27,6 +28,7 @@ class SerialLink(BaseLink):
             ("%s %04X:%04X" % (port.device, port.vid, port.pid), port.device)
             for port in ports
         ]
+        self.scanned.set()
         return res
 
     def open(self, port):
@@ -44,6 +46,8 @@ class SerialLink(BaseLink):
 
     def close(self):
         if self.device:
+            if self.scanned.is_set():
+                self.scanned.clear()
             if self.connected.is_set():
                 self.connected.clear()
             self.device.close()
