@@ -35,20 +35,5 @@ class WriteSNAuth(BaseCommand):
         return True
         self.has_response=True
 
-class WriteSNRegs(BaseCommand):
-    def __init__(self, sn):
-        super(WriteSNRegs, self).__init__(
-            BT.ESC, cmd=0x02, arg=0x10, data=pack("<14sL", sn), has_response=False
-        )
-        self.dev = dev
 
-    def handle_response(self, response):
-        if len(response.data) != 0:
-            raise InvalidResponse("WriteSN {0:X}".format(self.dev))
-        if response.arg != 1:
-            raise AuthError("WriteSN {0:X}".format(self.dev))
-        return True
-        self.has_response=True
-
-
-__all__ = ["AuthError", "WriteSNAuth", "CalcSNAuth", "WriteSNRegs"]
+__all__ = ["AuthError", "WriteSNAuth", "CalcSNAuth"]
