@@ -36,9 +36,9 @@ class WriteSNAuth(BaseCommand):
         self.has_response=True
 
 class WriteSNRegs(BaseCommand):
-    def __init__(self, sn):
+    def __init__(self, dev, sn):
         super(WriteSNRegs, self).__init__(
-            BT.ESC, cmd=0x02, arg=0x10, data=pack("<14sL", sn), has_response=False
+            dst=dev, cmd=0x02, arg=0x10, data=pack("<14sL", sn), has_response=False
         )
         self.dev = dev
 
