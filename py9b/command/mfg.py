@@ -22,7 +22,7 @@ class AuthError(Exception):
 
 class WriteSNAuth(BaseCommand):
     def __init__(self, dev, sn, auth):
-        super(WriteSN, self).__init__(
+        super(WriteSNAuth, self).__init__(
             dst=dev, cmd=0x18, arg=0x10, data=pack("<14sL", sn, auth), has_response=False
         )
         self.dev = dev
@@ -37,7 +37,7 @@ class WriteSNAuth(BaseCommand):
 
 class WriteSNRegs(BaseCommand):
     def __init__(self, sn):
-        super(WriteSN, self).__init__(
+        super(WriteSNRegs, self).__init__(
             BT.ESC, cmd=0x02, arg=0x10, data=pack("<14sL", sn), has_response=False
         )
         self.dev = dev
