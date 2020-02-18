@@ -11,8 +11,11 @@ _keys_char_uuid = "00000014-0000-1000-8000-00805f9b34fb"
 
 _manuf_id = 0x424e
 _manuf_data_ninebot = [33, 0, 0, 0, 0, 222]
+_manuf_data_ninebot_clone = [33, 2, 0, 0, 0, 220]
 _manuf_data_xiaomi =  [33, 0, 0, 0, 0, 223]
 _manuf_data_xiaomi_pro =  [34, 1, 0, 0, 0, 220]
+_manuf_data_ninebot_max = [36, 2, 0, 0, 0, 217]
+_manuf_data_ninebot_max555 = [36, 0, 0, 0, 0, 219]
 
 _write_chunk_size = 20  # as in android dumps
 
@@ -97,7 +100,8 @@ class BLELink(BaseLink):
             (dev.name, dev.address)
             for dev in devices
             if dev.metadata.get('manufacturer_data', {}).get(_manuf_id, [])
-                in [_manuf_data_xiaomi, _manuf_data_xiaomi_pro, _manuf_data_ninebot]
+                in [_manuf_data_xiaomi, _manuf_data_xiaomi_pro, _manuf_data_ninebot,
+                 _manuf_data_ninebot_max, _manuf_data_ninebot_max555, _manuf_data_ninebot_clone]
         ]
 
     def open(self, port):
