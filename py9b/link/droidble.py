@@ -61,14 +61,22 @@ device_ids = {
 )
 } #manufacturer data dictionary for identifying scooter dashboards
 
-service_ids = {"retail": "6e400001-b5a3-f393-e0a9-e50e24dcca9e"}  # service UUID dictionary
+service_ids = {
+    "retail": "6e400001-b5a3-f393-e0a9-e50e24dcca9e",
+    "spin": "6e400001-b5a3-f393-e0a9-e50e24dcbc9e",
+    "unicorn": "6e400001-b5a3-f393-e0a9-e50e24dcc89e"
+}  # service UUID dictionary
 
 receive_ids = {
-    "retail": "6e400002-b5a3-f393-e0a9-e50e24dcca9e"# receive characteristic UUID dictionary
+    "retail": "6e400002-b5a3-f393-e0a9-e50e24dcca9e",
+    "spin": "6e400002-b5a3-f393-e0a9-e50e24dcca9e",
+    "unicorn": "6e400002-b5a3-f393-e0a9-e50e24dcca9e" # receive characteristic UUID dictionary
 }
 
 transmit_ids = {
-    "retail": "6e400003-b5a3-f393-e0a9-e50e24dcca9e"# transmit characteristic UUID dictionary
+    "retail": "6e400003-b5a3-f393-e0a9-e50e24dcca9e",
+    "spin": "6e400003-b5a3-f393-e0a9-e50e24dcbc9e",
+    "unicorn": "6e400003-b5a3-f393-e0a9-e50e24dcc89e" # transmit characteristic UUID dictionary
 }
 
 key_ids = {
@@ -76,7 +84,7 @@ key_ids = {
     '_max_keys_char_uuid': "0000fe95-0000-1000-8000-00805f9b34fb"
 } #key characteristic UUID dictionary
 
-SCAN_TIMEOUT = 3
+SCAN_TIMEOUT = 5
 _write_chunk_size = 20
 
 class Fifo:
